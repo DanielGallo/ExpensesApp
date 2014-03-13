@@ -1,0 +1,611 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ExpensesModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Currency">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Expense">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ReportID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" Nullable="false" />
+          <Property Name="CategoryID" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Merchant" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="Receipt" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="Report">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" Nullable="false" />
+          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="CurrencyID" Type="int" Nullable="false" />
+          <Property Name="StatusID" Type="int" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+          <Property Name="Submitted" Type="bit" Nullable="false" />
+          <Property Name="DateSubmitted" Type="datetime" />
+          <Property Name="Approved" Type="bit" Nullable="false" />
+          <Property Name="DateApproved" Type="datetime" />
+          <Property Name="Reimbursed" Type="bit" Nullable="false" />
+          <Property Name="DateReimbursed" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Status">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="EmailAddress" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="PasswordSalt" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="ApproverID" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Expenses.dbo.ReportView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ReportView">
+          <Key>
+            <PropertyRef Name="ID" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="Description" />
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="CurrencyID" />
+            <PropertyRef Name="StatusID" />
+            <PropertyRef Name="DateCreated" />
+            <PropertyRef Name="Submitted" />
+            <PropertyRef Name="Approved" />
+            <PropertyRef Name="Reimbursed" />
+            
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" Nullable="false" />
+          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="CurrencyID" Type="int" Nullable="false" />
+          <Property Name="StatusID" Type="int" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+          <Property Name="Submitted" Type="bit" Nullable="false" />
+          <Property Name="DateSubmitted" Type="datetime" />
+          <Property Name="Approved" Type="bit" Nullable="false" />
+          <Property Name="DateApproved" Type="datetime" />
+          <Property Name="Reimbursed" Type="bit" Nullable="false" />
+          <Property Name="DateReimbursed" Type="datetime" />
+          <Property Name="Total" Type="decimal" Precision="38" Scale="2" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Expenses.dbo.UserExpenseView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="UserExpenseView">
+          <Key>
+            
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="CurrencyID" />
+            <PropertyRef Name="CurrencyName" />
+            <PropertyRef Name="CategoryID" />
+          </Key>
+          <Property Name="CategoryName" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="CurrencyID" Type="int" Nullable="false" />
+          <Property Name="CurrencyName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="38" Scale="2" />
+          <Property Name="CategoryID" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Expense_Category">
+          <End Role="Category" Type="Self.Category" Multiplicity="1" />
+          <End Role="Expense" Type="Self.Expense" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Category">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Expense">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Expense_Report">
+          <End Role="Report" Type="Self.Report" Multiplicity="1" />
+          <End Role="Expense" Type="Self.Expense" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Report">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Expense">
+              <PropertyRef Name="ReportID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Report_Currency">
+          <End Role="Currency" Type="Self.Currency" Multiplicity="1" />
+          <End Role="Report" Type="Self.Report" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Currency">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Report">
+              <PropertyRef Name="CurrencyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Report_Status">
+          <End Role="Status" Type="Self.Status" Multiplicity="1" />
+          <End Role="Report" Type="Self.Report" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Status">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Report">
+              <PropertyRef Name="StatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Report_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Report" Type="Self.Report" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Report">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="User1" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="User1">
+              <PropertyRef Name="ApproverID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ExpensesModelStoreContainer">
+          <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Currency" EntityType="Self.Currency" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Expense" EntityType="Self.Expense" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Report" EntityType="Self.Report" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Status" EntityType="Self.Status" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReportView" EntityType="Self.ReportView" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[ReportView].[ID] AS [ID], 
+[ReportView].[Name] AS [Name], 
+[ReportView].[Description] AS [Description], 
+[ReportView].[UserID] AS [UserID], 
+[ReportView].[CurrencyID] AS [CurrencyID], 
+[ReportView].[StatusID] AS [StatusID], 
+[ReportView].[DateCreated] AS [DateCreated], 
+[ReportView].[Submitted] AS [Submitted], 
+[ReportView].[DateSubmitted] AS [DateSubmitted], 
+[ReportView].[Approved] AS [Approved], 
+[ReportView].[DateApproved] AS [DateApproved], 
+[ReportView].[Reimbursed] AS [Reimbursed], 
+[ReportView].[DateReimbursed] AS [DateReimbursed], 
+[ReportView].[Total] AS [Total]
+FROM [dbo].[ReportView] AS [ReportView]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="UserExpenseView" EntityType="Self.UserExpenseView" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[UserExpenseView].[CategoryName] AS [CategoryName], 
+[UserExpenseView].[UserID] AS [UserID], 
+[UserExpenseView].[CurrencyID] AS [CurrencyID], 
+[UserExpenseView].[CurrencyName] AS [CurrencyName], 
+[UserExpenseView].[Amount] AS [Amount], 
+[UserExpenseView].[CategoryID] AS [CategoryID]
+FROM [dbo].[UserExpenseView] AS [UserExpenseView]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_Expense_Category" Association="Self.FK_Expense_Category">
+            <End Role="Category" EntitySet="Category" />
+            <End Role="Expense" EntitySet="Expense" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Expense_Report" Association="Self.FK_Expense_Report">
+            <End Role="Report" EntitySet="Report" />
+            <End Role="Expense" EntitySet="Expense" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Report_Currency" Association="Self.FK_Report_Currency">
+            <End Role="Currency" EntitySet="Currency" />
+            <End Role="Report" EntitySet="Report" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Report_Status" Association="Self.FK_Report_Status">
+            <End Role="Status" EntitySet="Status" />
+            <End Role="Report" EntitySet="Report" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Report_User" Association="Self.FK_Report_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Report" EntitySet="Report" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_User" Association="Self.FK_User_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="User1" EntitySet="User" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ExpensesModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Expenses" Relationship="Self.FK_Expense_Category" FromRole="Category" ToRole="Expense" />
+        </EntityType>
+        <EntityType Name="Currency">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Reports" Relationship="Self.FK_Report_Currency" FromRole="Currency" ToRole="Report" />
+        </EntityType>
+        <EntityType Name="Expense">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ReportID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CategoryID" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Merchant" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Receipt" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="Category" Relationship="Self.FK_Expense_Category" FromRole="Expense" ToRole="Category" />
+          <NavigationProperty Name="Report" Relationship="Self.FK_Expense_Report" FromRole="Expense" ToRole="Report" />
+        </EntityType>
+        <EntityType Name="Report">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="CurrencyID" Type="Int32" Nullable="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Submitted" Type="Boolean" Nullable="false" />
+          <Property Name="DateSubmitted" Type="DateTime" Precision="3" />
+          <Property Name="Approved" Type="Boolean" Nullable="false" />
+          <Property Name="DateApproved" Type="DateTime" Precision="3" />
+          <Property Name="Reimbursed" Type="Boolean" Nullable="false" />
+          <Property Name="DateReimbursed" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Currency" Relationship="Self.FK_Report_Currency" FromRole="Report" ToRole="Currency" />
+          <NavigationProperty Name="Expenses" Relationship="Self.FK_Expense_Report" FromRole="Report" ToRole="Expense" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Report_User" FromRole="Report" ToRole="User" />
+          <Property Name="StatusID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Status" Relationship="ExpensesModel.FK_Report_Status" FromRole="Report" ToRole="Status" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="EmailAddress" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PasswordSalt" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ApproverID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Reports" Relationship="Self.FK_Report_User" FromRole="User" ToRole="Report" />
+          <NavigationProperty Name="ApproverUsers" Relationship="Self.FK_User_User" FromRole="User" ToRole="User1" />
+          <NavigationProperty Name="UserApprover" Relationship="Self.FK_User_User" FromRole="User1" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Expense_Category">
+          <End Role="Category" Type="Self.Category" Multiplicity="1" />
+          <End Role="Expense" Type="Self.Expense" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Category">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Expense">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Report_Currency">
+          <End Role="Currency" Type="Self.Currency" Multiplicity="1" />
+          <End Role="Report" Type="Self.Report" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Currency">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Report">
+              <PropertyRef Name="CurrencyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Expense_Report">
+          <End Role="Report" Type="Self.Report" Multiplicity="1" />
+          <End Role="Expense" Type="Self.Expense" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Report">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Expense">
+              <PropertyRef Name="ReportID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Report_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Report" Type="Self.Report" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Report">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="User1" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="User1">
+              <PropertyRef Name="ApproverID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ExpensesEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Categories" EntityType="Self.Category" />
+          <EntitySet Name="Currencies" EntityType="Self.Currency" />
+          <EntitySet Name="Expenses" EntityType="Self.Expense" />
+          <EntitySet Name="Reports" EntityType="Self.Report" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <AssociationSet Name="FK_Expense_Category" Association="Self.FK_Expense_Category">
+            <End Role="Category" EntitySet="Categories" />
+            <End Role="Expense" EntitySet="Expenses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Report_Currency" Association="Self.FK_Report_Currency">
+            <End Role="Currency" EntitySet="Currencies" />
+            <End Role="Report" EntitySet="Reports" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Expense_Report" Association="Self.FK_Expense_Report">
+            <End Role="Report" EntitySet="Reports" />
+            <End Role="Expense" EntitySet="Expenses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Report_User" Association="Self.FK_Report_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Report" EntitySet="Reports" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_User" Association="Self.FK_User_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="User1" EntitySet="Users" />
+          </AssociationSet>
+          <EntitySet Name="Status" EntityType="ExpensesModel.Status" />
+          <AssociationSet Name="FK_Report_Status" Association="ExpensesModel.FK_Report_Status">
+            <End Role="Status" EntitySet="Status" />
+            <End Role="Report" EntitySet="Reports" />
+          </AssociationSet>
+          <EntitySet Name="ReportViews" EntityType="ExpensesModel.ReportView" />
+          <EntitySet Name="UserExpenseViews" EntityType="ExpensesModel.UserExpenseView" />
+        </EntityContainer>
+        <EntityType Name="Status">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Reports" Relationship="ExpensesModel.FK_Report_Status" FromRole="Status" ToRole="Report" />
+        </EntityType>
+        <Association Name="FK_Report_Status">
+          <End Type="ExpensesModel.Status" Role="Status" Multiplicity="1" />
+          <End Type="ExpensesModel.Report" Role="Report" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Status">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Report">
+              <PropertyRef Name="StatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ReportView">
+          <Key>
+            <PropertyRef Name="ID" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="Description" />
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="CurrencyID" />
+            <PropertyRef Name="StatusID" />
+            <PropertyRef Name="DateCreated" />
+            <PropertyRef Name="Submitted" />
+            <PropertyRef Name="Approved" />
+            <PropertyRef Name="Reimbursed" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="CurrencyID" Type="Int32" Nullable="false" />
+          <Property Name="StatusID" Type="Int32" Nullable="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Submitted" Type="Boolean" Nullable="false" />
+          <Property Name="DateSubmitted" Type="DateTime" Precision="3" />
+          <Property Name="Approved" Type="Boolean" Nullable="false" />
+          <Property Name="DateApproved" Type="DateTime" Precision="3" />
+          <Property Name="Reimbursed" Type="Boolean" Nullable="false" />
+          <Property Name="DateReimbursed" Type="DateTime" Precision="3" />
+          <Property Name="Total" Type="Decimal" Precision="38" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserExpenseView">
+          <Key>
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="CurrencyID" />
+            <PropertyRef Name="CurrencyName" />
+            <PropertyRef Name="CategoryID" />
+          </Key>
+          <Property Name="CategoryName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="CurrencyID" Type="Int32" Nullable="false" />
+          <Property Name="CurrencyName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Amount" Type="Decimal" Precision="38" Scale="2" />
+          <Property Name="CategoryID" Type="Int32" Nullable="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ExpensesModelStoreContainer" CdmEntityContainer="ExpensesEntities">
+          <EntitySetMapping Name="Categories">
+            <EntityTypeMapping TypeName="ExpensesModel.Category">
+              <MappingFragment StoreEntitySet="Category">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Currencies">
+            <EntityTypeMapping TypeName="ExpensesModel.Currency">
+              <MappingFragment StoreEntitySet="Currency">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Expenses">
+            <EntityTypeMapping TypeName="ExpensesModel.Expense">
+              <MappingFragment StoreEntitySet="Expense">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="ReportID" ColumnName="ReportID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Merchant" ColumnName="Merchant" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Receipt" ColumnName="Receipt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Reports">
+            <EntityTypeMapping TypeName="ExpensesModel.Report">
+              <MappingFragment StoreEntitySet="Report">
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="CurrencyID" ColumnName="CurrencyID" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="Submitted" ColumnName="Submitted" />
+                <ScalarProperty Name="DateSubmitted" ColumnName="DateSubmitted" />
+                <ScalarProperty Name="Approved" ColumnName="Approved" />
+                <ScalarProperty Name="DateApproved" ColumnName="DateApproved" />
+                <ScalarProperty Name="Reimbursed" ColumnName="Reimbursed" />
+                <ScalarProperty Name="DateReimbursed" ColumnName="DateReimbursed" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="ExpensesModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="PasswordSalt" ColumnName="PasswordSalt" />
+                <ScalarProperty Name="ApproverID" ColumnName="ApproverID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Status">
+            <EntityTypeMapping TypeName="ExpensesModel.Status">
+              <MappingFragment StoreEntitySet="Status">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReportViews">
+            <EntityTypeMapping TypeName="ExpensesModel.ReportView">
+              <MappingFragment StoreEntitySet="ReportView">
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="DateReimbursed" ColumnName="DateReimbursed" />
+                <ScalarProperty Name="Reimbursed" ColumnName="Reimbursed" />
+                <ScalarProperty Name="DateApproved" ColumnName="DateApproved" />
+                <ScalarProperty Name="Approved" ColumnName="Approved" />
+                <ScalarProperty Name="DateSubmitted" ColumnName="DateSubmitted" />
+                <ScalarProperty Name="Submitted" ColumnName="Submitted" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="CurrencyID" ColumnName="CurrencyID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserExpenseViews">
+            <EntityTypeMapping TypeName="ExpensesModel.UserExpenseView">
+              <MappingFragment StoreEntitySet="UserExpenseView">
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="CurrencyName" ColumnName="CurrencyName" />
+                <ScalarProperty Name="CurrencyID" ColumnName="CurrencyID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
